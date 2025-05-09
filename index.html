@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onur Yıldız</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: url('https://cdn.discordapp.com/attachments/1153460112007114884/1370025253815713985/I_Made_A_Minimalist_Retro_Style_Windows_Wallpaper_4k_R.png?ex=681dfef2&is=681cad72&hm=c522e7ecbd7362ccc9f90c9033cc38af4f408f7d90463b0a91a78ab4716960b5&') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .iconos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .icono {
+            width: 80px;
+            height: 80px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .icono img {
+            margin-bottom: 5px;
+        }
+
+        .icono p {
+            font-size: 12px;
+            color: white;
+            text-shadow: 1px 1px 1px black;
+            margin-top: -6px;
+        }
+
+        .window {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #000000 #000000 #dfdfdf;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+            margin: 20px;
+            position: absolute;
+            top: 120px;
+            left: 20vw;
+            min-width: 300px;
+            min-height: 200px;
+            resize: none;
+            overflow: hidden;
+            max-height: calc(100vh - 56px); /* 36px görev çubuğu + 20px margin */
+        }
+
+        .window.resizing {
+            opacity: 0.8;
+        }
+
+        .window.minimized {
+            display: none;
+        }
+
+        .window.maximized {
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: calc(100vh - 36px) !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+        }
+
+        .title-bar {
+            background: #000080;
+            color: white;
+            padding: 3px 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            user-select: none;
+        }
+
+        .title-bar-text {
+            font-weight: bold;
+        }
+
+        .title-bar-controls {
+            display: flex;
+            gap: 2px;
+        }
+
+        .title-bar-controls button {
+            width: 16px;
+            height: 16px;
+            border: 1px solid;
+            border-color: #dfdfdf #000000 #000000 #dfdfdf;
+            background: #c0c0c0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            position: relative;
+        }
+
+        .btn-minimize::before {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 2px;
+            background: #000;
+            position: absolute;
+            left: 3px;
+            bottom: 3px;
+            border-radius: 1px;
+        }
+
+        .btn-maximize::before {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 8px;
+            border: 2px solid #000;
+            position: absolute;
+            left: 2px;
+            top: 2px;
+            box-sizing: border-box;
+            background: transparent;
+        }
+
+        .btn-close::before, .btn-close::after {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 7px;
+            width: 8px;
+            height: 2px;
+            background: #000;
+            border-radius: 1px;
+        }
+
+        .btn-close::before {
+            transform: rotate(45deg);
+        }
+
+        .btn-close::after {
+            transform: rotate(-45deg);
+        }
+
+        .window-body {
+            padding: 10px;
+            background: #c0c0c0;
+        }
+
+        button {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #000000 #000000 #dfdfdf;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:active {
+            border-color: #000000 #dfdfdf #dfdfdf #000000;
+        }
+
+        fieldset {
+            border: 2px solid;
+            border-color: #000000 #dfdfdf #dfdfdf #000000;
+            margin: 10px 0;
+            padding: 10px;
+        }
+
+        legend {
+            font-weight: bold;
+            padding: 0 5px;
+        }
+
+        .win98-footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 32px;
+            background: #c0c0c0;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            border-top: 2px solid #dfdfdf;
+            border-bottom: 2px solid #000;
+            z-index: 9999;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+        }
+
+        .win98-footer p {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1;
+        }
+
+        .logos {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .logos img {
+            margin: 0 5px;
+        }
+
+        a {
+            color: #000080;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Pencere için resize handle stilleri */
+        .window .resize-handle {
+            position: absolute;
+            z-index: 10;
+            background: transparent;
+        }
+        .window .resize-handle.n { top: -3px; left: 0; right: 0; height: 6px; cursor: n-resize; }
+        .window .resize-handle.s { bottom: -3px; left: 0; right: 0; height: 6px; cursor: s-resize; }
+        .window .resize-handle.e { top: 0; right: -3px; bottom: 0; width: 6px; cursor: e-resize; }
+        .window .resize-handle.w { top: 0; left: -3px; bottom: 0; width: 6px; cursor: w-resize; }
+        .window .resize-handle.nw { top: -3px; left: -3px; width: 10px; height: 10px; cursor: nw-resize; }
+        .window .resize-handle.ne { top: -3px; right: -3px; width: 10px; height: 10px; cursor: ne-resize; }
+        .window .resize-handle.sw { bottom: -3px; left: -3px; width: 10px; height: 10px; cursor: sw-resize; }
+        .window .resize-handle.se { bottom: -3px; right: -3px; width: 10px; height: 10px; cursor: se-resize; }
+
+        .sidebar-apps {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 90px;
+            height: 100vh;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 16px;
+            z-index: 10000;
+            gap: 10px;
+        }
+        .sidebar-apps .icono {
+            margin-bottom: 8px;
+        }
+        .container {
+            margin-left: 90px;
+        }
+        .win98-footer {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .taskbar-app-btn {
+            background: #e0e0e0;
+            border: 1px solid #888;
+            border-radius: 3px;
+            padding: 2px 10px 2px 4px;
+            margin-right: 4px;
+            display: inline-flex;
+            align-items: center;
+            font-size: 13px;
+            cursor: pointer;
+            gap: 4px;
+        }
+        .taskbar-app-btn.active {
+            background: #c0c0c0;
+            border: 2px inset #fff;
+        }
+    </style>
+</head>
+<body>
+<div id="app_webamp"></div>
+<div class="sidebar-apps">
+  <a href="#" id="papelera">
+    <div class="icono">
+      <img src="https://adrianbl.neocities.org/assets/img/back.png" width="48px">
+      <p>Trash Can</p>
+    </div>
+  </a>
+  <a href="#" id="home">
+    <div class="icono">
+      <img src="https://adrianbl.neocities.org/assets/img/home.png" width="48px"><br>
+      <p>Onur Yildiz</p>
+    </div>
+  </a>
+  <a href="#" id="repositorios">
+    <div class="icono">
+      <img src="https://adrianbl.neocities.org/assets/img/folder.png" width="38px">
+      <p>CV</p>
+    </div>
+  </a>
+  <a href="#" id="webamp_launcher">
+    <div class="icono">
+      <img src="https://adrianbl.neocities.org/assets/img/winamp.png" width="48px">
+      <p>Webamp</p>
+    </div>
+  </a>
+</div>
+
+<div class="container">
+  <div class="window" id="ventana_home">
+    <div class="resize-handle n"></div>
+    <div class="resize-handle s"></div>
+    <div class="resize-handle e"></div>
+    <div class="resize-handle w"></div>
+    <div class="resize-handle nw"></div>
+    <div class="resize-handle ne"></div>
+    <div class="resize-handle sw"></div>
+    <div class="resize-handle se"></div>
+    <div class="title-bar" id="drag_home">
+      <div class="title-bar-text">Onur Yildiz</div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize" id="minimizar_ventana_home" class="btn-minimize"></button>
+        <button aria-label="Maximize" id="maximizar_ventana_home" class="btn-maximize"></button>
+        <button aria-label="Close" id="cerrar_ventana_home" class="btn-close"></button>
+      </div>
+    </div>
+    <div class="window-body">
+      <div class="logos">
+        <img class="" src="https://cdn.discordapp.com/attachments/1153460112007114884/1370016559367454730/nxhazer.png?ex=681df6d9&is=681ca559&hm=0f5f0571ee877a5ef1aa8ab9d17442a48a01cf6a5055ef5ee66af13c64388872&" height="85">
+      </div>
+      <br />
+      <center>
+        <b>You can find my profile links below.</b>
+        <p>
+        </p>
+      </center>
+
+      <fieldset style="text-align: center;">
+        <legend>Links</legend>
+        <button>
+          <a href="https://github.com/nxhazeer">GitHub</a>
+        </button>
+        <button>
+          <a href="https://www.linkedin.com/in/onur-y%C4%B1ld%C4%B1z-34321b294/">LinkedIn</a>
+        </button>
+        <button>
+          <a href="#">Certifications</a>
+        </button>
+      </fieldset>
+
+      <fieldset style="text-align: center;">
+        <legend>Other Links</legend>
+        <button>
+          <a href="https://www.instagram.com/nxhazer_/" target="_blank">Instagram</a>
+        </button>
+        <button>
+          <a href="https://discord.gg" target="_blank">Discord</a></button>
+        <button>
+          <a href="https://x.com/nxhazerrr" target="_blank">X</a>
+        </button>
+      </fieldset>
+    </div>
+  </div>
+</div>
+
+<!-- CV Penceresi -->
+<div class="window" id="ventana_cv" style="display:none; min-width:320px; min-height:160px; top:180px; left:30vw;">
+  <div class="resize-handle n"></div>
+  <div class="resize-handle s"></div>
+  <div class="resize-handle e"></div>
+  <div class="resize-handle w"></div>
+  <div class="resize-handle nw"></div>
+  <div class="resize-handle ne"></div>
+  <div class="resize-handle sw"></div>
+  <div class="resize-handle se"></div>
+  <div class="title-bar" id="drag_cv">
+    <div class="title-bar-text">CV</div>
+    <div class="title-bar-controls">
+      <button aria-label="Minimize" id="minimizar_ventana_cv" class="btn-minimize"></button>
+      <button aria-label="Maximize" id="maximizar_ventana_cv" class="btn-maximize"></button>
+      <button aria-label="Close" id="cerrar_ventana_cv" class="btn-close"></button>
+    </div>
+  </div>
+  <div class="window-body" style="text-align:center; padding:32px 10px;">
+    <h3>Onur Yıldız - CV</h3>
+    <button id="cv_incele_btn" style="margin: 10px 20px;">CV İncele</button>
+    <button id="cv_indir_btn" style="margin: 10px 20px;">CV İndir</button>
+    <br><br>
+    <button id="cv_like_btn" style="margin-top: 18px; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 7px 18px; border-radius: 6px;">
+      <span style="font-size: 20px;">❤️</span>
+      <span>Click here to like this CV.</span>
+      <span id="cv_like_count" style="color: #000; font-weight: bold; margin-left: 8px;"></span>
+    </button>
+  </div>
+</div>
+
+<!-- Certifications Modal -->
+<div id="cert-modal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:20000; align-items:center; justify-content:center;">
+  <div style="background:#c0c0c0; border:2px solid #000; border-radius:8px; padding:32px 24px; min-width:260px; box-shadow:0 4px 24px #0008; text-align:center;">
+    <h4 style="margin-bottom:18px;">Select Certification</h4>
+    <button id="cert-restapi-btn" style="margin:8px 0; width:200px;">Rest API (Intermediate) Certificate</button><br>
+    <button id="cert-software-btn" style="margin:8px 0; width:200px;">Software Engineer Certificate</button><br>
+    <button id="cert-modal-close" style="margin-top:18px; width:200px; background:#9c9a9a;; color:#000;">Kapat</button>
+  </div>
+</div>
+
+<footer class="win98-footer">
+  <div class="footer-left">
+    <img src="https://cdn.discordapp.com/attachments/1153460112007114884/1370024702583771301/windows96.png?ex=681dfe6e&is=681cacee&hm=1557f2af608b12e0ea21d86e292d4a846dd65c0c59f81a70a472de7c75483d18&" alt="Windows 96" style="height:26px;vertical-align:middle;margin-right:10px;">
+    <span id="taskbar-apps"></span>
+  </div>
+  <div style="margin-left:auto; display:flex; flex-direction:column; align-items:flex-end;">
+    <p id="win98_clock" style="margin:0; font-size:13px;"></p>
+    <p id="win98_datetime" style="margin:0; font-size:13px;"></p>
+  </div>
+</footer>
+
+<script>
+// Window drag
+const windowEl = document.getElementById('ventana_home');
+const titleBar = document.getElementById('drag_home');
+let isDragging = false, offsetX = 0, offsetY = 0;
+
+titleBar.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    offsetX = e.clientX - windowEl.offsetLeft;
+    offsetY = e.clientY - windowEl.offsetTop;
+    document.body.style.userSelect = 'none';
+});
+document.addEventListener('mousemove', function(e) {
+    if (isDragging) {
+        windowEl.style.left = (e.clientX - offsetX) + 'px';
+        windowEl.style.top = (e.clientY - offsetY) + 'px';
+    }
+});
+document.addEventListener('mouseup', function() {
+    isDragging = false;
+    document.body.style.userSelect = '';
+});
+
+// Minimize, Maximize, Close
+const minBtn = document.getElementById('minimizar_ventana_home');
+const maxBtn = document.getElementById('maximizar_ventana_home');
+const closeBtn = document.getElementById('cerrar_ventana_home');
+let isMaximized = false;
+let prevState = {};
+
+minBtn.onclick = function() {
+    windowEl.classList.add('minimized');
+};
+maxBtn.onclick = function() {
+    if (!isMaximized) {
+        prevState = {
+            left: windowEl.style.left,
+            top: windowEl.style.top,
+            width: windowEl.style.width,
+            height: windowEl.style.height,
+            margin: windowEl.style.margin
+        };
+        windowEl.classList.add('maximized');
+        windowEl.style.left = '0';
+        windowEl.style.top = '0';
+        windowEl.style.width = '100vw';
+        windowEl.style.height = 'calc(100vh - 36px)';
+        windowEl.style.margin = '0';
+        isMaximized = true;
+    } else {
+        windowEl.classList.remove('maximized');
+        windowEl.style.left = prevState.left;
+        windowEl.style.top = prevState.top;
+        windowEl.style.width = prevState.width;
+        windowEl.style.height = prevState.height;
+        windowEl.style.margin = prevState.margin;
+        isMaximized = false;
+    }
+};
+closeBtn.onclick = function() {
+    windowEl.style.display = 'none';
+};
+
+// Restore from minimized by clicking desktop icon
+const homeIcon = document.getElementById('home');
+homeIcon.onclick = function(e) {
+    e.preventDefault();
+    windowEl.classList.remove('minimized');
+    windowEl.style.display = '';
+};
+
+// CV Penceresi Açma
+const cvIcon = document.getElementById('repositorios');
+const cvWindow = document.getElementById('ventana_cv');
+const dragCv = document.getElementById('drag_cv');
+const minCvBtn = document.getElementById('minimizar_ventana_cv');
+const maxCvBtn = document.getElementById('maximizar_ventana_cv');
+const closeCvBtn = document.getElementById('cerrar_ventana_cv');
+let isCvMaximized = false;
+let prevCvState = {};
+
+cvIcon.onclick = function(e) {
+  e.preventDefault();
+  cvWindow.style.display = '';
+  cvWindow.classList.remove('minimized');
+};
+closeCvBtn.onclick = function() {
+  cvWindow.style.display = 'none';
+};
+minCvBtn.onclick = function() {
+  cvWindow.classList.add('minimized');
+};
+maxCvBtn.onclick = function() {
+  if (!isCvMaximized) {
+    prevCvState = {
+      left: cvWindow.style.left,
+      top: cvWindow.style.top,
+      width: cvWindow.style.width,
+      height: cvWindow.style.height,
+      margin: cvWindow.style.margin
+    };
+    cvWindow.classList.add('maximized');
+    cvWindow.style.left = '0';
+    cvWindow.style.top = '0';
+    cvWindow.style.width = '100vw';
+    cvWindow.style.height = 'calc(100vh - 36px)';
+    cvWindow.style.margin = '0';
+    isCvMaximized = true;
+  } else {
+    cvWindow.classList.remove('maximized');
+    cvWindow.style.left = prevCvState.left;
+    cvWindow.style.top = prevCvState.top;
+    cvWindow.style.width = prevCvState.width;
+    cvWindow.style.height = prevCvState.height;
+    cvWindow.style.margin = prevCvState.margin;
+    isCvMaximized = false;
+  }
+};
+// CV Penceresi Sürükleme
+let isCvDragging = false, cvOffsetX = 0, cvOffsetY = 0;
+dragCv.addEventListener('mousedown', function(e) {
+  isCvDragging = true;
+  cvOffsetX = e.clientX - cvWindow.offsetLeft;
+  cvOffsetY = e.clientY - cvWindow.offsetTop;
+  document.body.style.userSelect = 'none';
+});
+document.addEventListener('mousemove', function(e) {
+  if (isCvDragging) {
+    cvWindow.style.left = (e.clientX - cvOffsetX) + 'px';
+    cvWindow.style.top = (e.clientY - cvOffsetY) + 'px';
+  }
+});
+document.addEventListener('mouseup', function() {
+  isCvDragging = false;
+  document.body.style.userSelect = '';
+});
+// CV Butonları
+const cvInceleBtn = document.getElementById('cv_incele_btn');
+const cvIndirBtn = document.getElementById('cv_indir_btn');
+const cvLikeBtn = document.getElementById('cv_like_btn');
+const cvLikeCount = document.getElementById('cv_like_count');
+
+// Like sayacı başlangıç değeri
+let likeCount = 86;
+// Kullanıcı daha önce like attı mı kontrolü
+const likedKey = 'cv_liked';
+if (localStorage.getItem(likedKey) === '1') {
+  cvLikeBtn.disabled = true;
+  cvLikeBtn.style.opacity = '0.7';
+  cvLikeBtn.querySelector('span').textContent = '💖';
+  likeCount = 87;
+}
+cvLikeCount.textContent = likeCount;
+
+cvInceleBtn.onclick = function() {
+  window.open('OnurYildizCV.pdf', '_blank');
+};
+cvIndirBtn.onclick = function() {
+  const link = document.createElement('a');
+  link.href = 'OnurYildizCV.pdf';
+  link.download = 'OnurYildizCV.pdf';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+cvLikeBtn.onclick = function() {
+  if (localStorage.getItem(likedKey) === '1') return;
+  likeCount++;
+  cvLikeCount.textContent = likeCount;
+  cvLikeBtn.disabled = true;
+  cvLikeBtn.style.opacity = '0.7';
+  cvLikeBtn.querySelector('span').textContent = '💖';
+  localStorage.setItem(likedKey, '1');
+};
+
+// Ana pencere başlık çubuğuna çift tıklama ile tam ekran/normal geçiş
+titleBar.addEventListener('dblclick', function() {
+    maxBtn.click();
+});
+// CV penceresi başlık çubuğuna çift tıklama ile tam ekran/normal geçiş
+dragCv.addEventListener('dblclick', function() {
+    maxCvBtn.click();
+});
+
+// Genel pencere yeniden boyutlandırma fonksiyonu
+function makeResizable(win) {
+  const handles = win.querySelectorAll('.resize-handle');
+  let isResizing = false;
+  let dir = '';
+  let startX, startY, startW, startH, startL, startT;
+
+  handles.forEach(handle => {
+    handle.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      isResizing = true;
+      dir = Array.from(handle.classList).find(cls => cls.length === 1 || cls.length === 2);
+      startX = e.clientX;
+      startY = e.clientY;
+      startW = parseInt(document.defaultView.getComputedStyle(win).width, 10);
+      startH = parseInt(document.defaultView.getComputedStyle(win).height, 10);
+      startL = parseInt(win.style.left, 10) || win.offsetLeft;
+      startT = parseInt(win.style.top, 10) || win.offsetTop;
+      document.body.style.userSelect = 'none';
+    });
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!isResizing) return;
+    let dx = e.clientX - startX;
+    let dy = e.clientY - startY;
+    let minW = 300, minH = 200;
+    let maxW = window.innerWidth, maxH = window.innerHeight - 36;
+    if (dir.includes('e')) {
+      win.style.width = Math.max(minW, Math.min(startW + dx, maxW)) + 'px';
+    }
+    if (dir.includes('s')) {
+      win.style.height = Math.max(minH, Math.min(startH + dy, maxH)) + 'px';
+    }
+    if (dir.includes('w')) {
+      let newW = Math.max(minW, Math.min(startW - dx, maxW));
+      win.style.width = newW + 'px';
+      win.style.left = (startL + dx) + 'px';
+    }
+    if (dir.includes('n')) {
+      let newH = Math.max(minH, Math.min(startH - dy, maxH));
+      win.style.height = newH + 'px';
+      win.style.top = (startT + dy) + 'px';
+    }
+  });
+  document.addEventListener('mouseup', function() {
+    isResizing = false;
+    document.body.style.userSelect = '';
+  });
+}
+makeResizable(document.getElementById('ventana_home'));
+makeResizable(document.getElementById('ventana_cv'));
+
+// Saat fonksiyonu
+function updateClock() {
+  const clock = document.getElementById('win98_clock');
+  const datetime = document.getElementById('win98_datetime');
+  if (!clock || !datetime) return;
+  const now = new Date();
+  // Türkiye saatine göre al
+  const options = { timeZone: 'Europe/Istanbul', hour: '2-digit', minute: '2-digit', hour12: false };
+  const dateOptions = { timeZone: 'Europe/Istanbul', day: '2-digit', month: '2-digit', year: 'numeric' };
+  const timeStr = now.toLocaleTimeString('tr-TR', options);
+  const dateStr = now.toLocaleDateString('tr-TR', dateOptions);
+  clock.textContent = timeStr;
+  datetime.textContent = dateStr;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Görev çubuğunda açık pencereleri göster
+function updateTaskbarApps() {
+  const taskbar = document.getElementById('taskbar-apps');
+  let html = '';
+  if (windowEl.style.display !== 'none' && !windowEl.classList.contains('minimized')) {
+    html += `<span class="taskbar-app-btn active"><img src="https://adrianbl.neocities.org/assets/img/home.png" width="18" style="vertical-align:middle;"> Onur Yildiz</span>`;
+  }
+  if (cvWindow.style.display !== 'none' && !cvWindow.classList.contains('minimized')) {
+    html += `<span class="taskbar-app-btn active"><img src="https://adrianbl.neocities.org/assets/img/folder.png" width="16" style="vertical-align:middle;"> CV</span>`;
+  }
+  taskbar.innerHTML = html;
+}
+// Pencere açma/kapama/alta alma olaylarında güncelle
+[windowEl, cvWindow].forEach(win => {
+  win.addEventListener('transitionend', updateTaskbarApps);
+  win.addEventListener('animationend', updateTaskbarApps);
+});
+// Ayrıca ilgili butonlarda da çağır
+[minBtn, maxBtn, closeBtn, homeIcon, minCvBtn, maxCvBtn, closeCvBtn, cvIcon].forEach(btn => {
+  if (btn) btn.addEventListener('click', setTimeout.bind(null, updateTaskbarApps, 50));
+});
+// İlk yüklemede de çağır
+updateTaskbarApps();
+
+// Sağ tıklamayı devre dışı bırak
+window.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+});
+
+// Certifications modal açma
+const certModal = document.getElementById('cert-modal');
+const certRestBtn = document.getElementById('cert-restapi-btn');
+const certSoftBtn = document.getElementById('cert-software-btn');
+const certModalClose = document.getElementById('cert-modal-close');
+document.querySelectorAll('button > a').forEach(function(a) {
+  if (a.textContent.trim() === 'Certifications') {
+    a.parentElement.onclick = function(e) {
+      e.preventDefault();
+      certModal.style.display = 'flex';
+    };
+  }
+});
+certRestBtn.onclick = function() {
+  window.open('rest_api_intermediate certificate.pdf', '_blank');
+  certModal.style.display = 'none';
+};
+certSoftBtn.onclick = function() {
+  window.open('software_engineer certificate.pdf', '_blank');
+  certModal.style.display = 'none';
+};
+certModalClose.onclick = function() {
+  certModal.style.display = 'none';
+};
+// Modal dışında bir yere tıklayınca kapansın
+certModal.addEventListener('click', function(e) {
+  if (e.target === certModal) certModal.style.display = 'none';
+});
+</script>
+</body>
+</html>
