@@ -64,7 +64,7 @@
             min-height: 200px;
             resize: none;
             overflow: hidden;
-            max-height: calc(100vh - 56px); /* 36px görev çubuğu + 20px margin */
+            max-height: calc(100vh - 56px);
         }
 
         .window.resizing {
@@ -234,7 +234,7 @@
             text-decoration: underline;
         }
 
-        /* Pencere için resize handle stilleri */
+        
         .window .resize-handle {
             position: absolute;
             z-index: 10;
@@ -384,7 +384,7 @@
   </div>
 </div>
 
-<!-- CV Penceresi -->
+
 <div class="window" id="ventana_cv" style="display:none; min-width:320px; min-height:160px; top:180px; left:30vw;">
   <div class="resize-handle n"></div>
   <div class="resize-handle s"></div>
@@ -415,13 +415,13 @@
   </div>
 </div>
 
-<!-- Certifications Modal -->
+
 <div id="cert-modal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:20000; align-items:center; justify-content:center;">
   <div style="background:#c0c0c0; border:2px solid #000; border-radius:8px; padding:32px 24px; min-width:260px; box-shadow:0 4px 24px #0008; text-align:center;">
     <h4 style="margin-bottom:18px;">Select Certification</h4>
     <button id="cert-restapi-btn" style="margin:8px 0; width:200px;">Rest API (Intermediate) Certificate</button><br>
     <button id="cert-software-btn" style="margin:8px 0; width:200px;">Software Engineer Certificate</button><br>
-    <button id="cert-modal-close" style="margin-top:18px; width:200px; background:#9c9a9a;; color:#000;">Kapat</button>
+    <button id="cert-modal-close" style="margin-top:18px; width:200px; background:#9c9a9a;; color:#000;">Close</button>
   </div>
 </div>
 
@@ -437,7 +437,7 @@
 </footer>
 
 <script>
-// Window drag
+
 const windowEl = document.getElementById('ventana_home');
 const titleBar = document.getElementById('drag_home');
 let isDragging = false, offsetX = 0, offsetY = 0;
@@ -459,7 +459,7 @@ document.addEventListener('mouseup', function() {
     document.body.style.userSelect = '';
 });
 
-// Minimize, Maximize, Close
+
 const minBtn = document.getElementById('minimizar_ventana_home');
 const maxBtn = document.getElementById('maximizar_ventana_home');
 const closeBtn = document.getElementById('cerrar_ventana_home');
@@ -499,7 +499,7 @@ closeBtn.onclick = function() {
     windowEl.style.display = 'none';
 };
 
-// Restore from minimized by clicking desktop icon
+
 const homeIcon = document.getElementById('home');
 homeIcon.onclick = function(e) {
     e.preventDefault();
@@ -507,7 +507,7 @@ homeIcon.onclick = function(e) {
     windowEl.style.display = '';
 };
 
-// CV Penceresi Açma
+
 const cvIcon = document.getElementById('repositorios');
 const cvWindow = document.getElementById('ventana_cv');
 const dragCv = document.getElementById('drag_cv');
@@ -554,7 +554,7 @@ maxCvBtn.onclick = function() {
     isCvMaximized = false;
   }
 };
-// CV Penceresi Sürükleme
+
 let isCvDragging = false, cvOffsetX = 0, cvOffsetY = 0;
 dragCv.addEventListener('mousedown', function(e) {
   isCvDragging = true;
@@ -572,15 +572,13 @@ document.addEventListener('mouseup', function() {
   isCvDragging = false;
   document.body.style.userSelect = '';
 });
-// CV Butonları
+
 const cvInceleBtn = document.getElementById('cv_incele_btn');
 const cvIndirBtn = document.getElementById('cv_indir_btn');
 const cvLikeBtn = document.getElementById('cv_like_btn');
 const cvLikeCount = document.getElementById('cv_like_count');
 
-// Like sayacı başlangıç değeri
-let likeCount = 86;
-// Kullanıcı daha önce like attı mı kontrolü
+
 const likedKey = 'cv_liked';
 if (localStorage.getItem(likedKey) === '1') {
   cvLikeBtn.disabled = true;
@@ -591,11 +589,11 @@ if (localStorage.getItem(likedKey) === '1') {
 cvLikeCount.textContent = likeCount;
 
 cvInceleBtn.onclick = function() {
-  window.open('OnurYildizCV.pdf', '_blank');
+  window.open('https://nxhazeer.github.io/onuryildiz.dev/OnurYildizCV.pdf', '_blank');
 };
 cvIndirBtn.onclick = function() {
   const link = document.createElement('a');
-  link.href = 'OnurYildizCV.pdf';
+  link.href = 'https://nxhazeer.github.io/onuryildiz.dev/OnurYildizCV.pdf';
   link.download = 'OnurYildizCV.pdf';
   document.body.appendChild(link);
   link.click();
@@ -611,16 +609,16 @@ cvLikeBtn.onclick = function() {
   localStorage.setItem(likedKey, '1');
 };
 
-// Ana pencere başlık çubuğuna çift tıklama ile tam ekran/normal geçiş
+
 titleBar.addEventListener('dblclick', function() {
     maxBtn.click();
 });
-// CV penceresi başlık çubuğuna çift tıklama ile tam ekran/normal geçiş
+
 dragCv.addEventListener('dblclick', function() {
     maxCvBtn.click();
 });
 
-// Genel pencere yeniden boyutlandırma fonksiyonu
+
 function makeResizable(win) {
   const handles = win.querySelectorAll('.resize-handle');
   let isResizing = false;
@@ -673,7 +671,7 @@ function makeResizable(win) {
 makeResizable(document.getElementById('ventana_home'));
 makeResizable(document.getElementById('ventana_cv'));
 
-// Saat fonksiyonu
+
 function updateClock() {
   const clock = document.getElementById('win98_clock');
   const datetime = document.getElementById('win98_datetime');
@@ -690,7 +688,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// Görev çubuğunda açık pencereleri göster
+
 function updateTaskbarApps() {
   const taskbar = document.getElementById('taskbar-apps');
   let html = '';
@@ -702,24 +700,24 @@ function updateTaskbarApps() {
   }
   taskbar.innerHTML = html;
 }
-// Pencere açma/kapama/alta alma olaylarında güncelle
+
 [windowEl, cvWindow].forEach(win => {
   win.addEventListener('transitionend', updateTaskbarApps);
   win.addEventListener('animationend', updateTaskbarApps);
 });
-// Ayrıca ilgili butonlarda da çağır
+
 [minBtn, maxBtn, closeBtn, homeIcon, minCvBtn, maxCvBtn, closeCvBtn, cvIcon].forEach(btn => {
   if (btn) btn.addEventListener('click', setTimeout.bind(null, updateTaskbarApps, 50));
 });
-// İlk yüklemede de çağır
+
 updateTaskbarApps();
 
-// Sağ tıklamayı devre dışı bırak
+
 window.addEventListener('contextmenu', function(e) {
   e.preventDefault();
 });
 
-// Certifications modal açma
+
 const certModal = document.getElementById('cert-modal');
 const certRestBtn = document.getElementById('cert-restapi-btn');
 const certSoftBtn = document.getElementById('cert-software-btn');
@@ -733,17 +731,17 @@ document.querySelectorAll('button > a').forEach(function(a) {
   }
 });
 certRestBtn.onclick = function() {
-  window.open('rest_api_intermediate certificate.pdf', '_blank');
+  window.open('https://nxhazeer.github.io/onuryildiz.dev/rest_api_intermediate certificate.pdf', '_blank');
   certModal.style.display = 'none';
 };
 certSoftBtn.onclick = function() {
-  window.open('software_engineer certificate.pdf', '_blank');
+  window.open('https://nxhazeer.github.io/onuryildiz.dev/software_engineer certificate.pdf', '_blank');
   certModal.style.display = 'none';
 };
 certModalClose.onclick = function() {
   certModal.style.display = 'none';
 };
-// Modal dışında bir yere tıklayınca kapansın
+
 certModal.addEventListener('click', function(e) {
   if (e.target === certModal) certModal.style.display = 'none';
 });
